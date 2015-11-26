@@ -12,9 +12,8 @@ GPIO_PCOR	EQU 0x08	;Turn output pin off
 GPIO_PTOR	EQU 0x0C	;Flip output pin
 GPIO_PDIR	EQU 0x10	;Set input pin on or off
 GPIO_PDDR	EQU 0x14	;Set as input or output
-
-PORTB_PCR18 EQU 0x4004A04C 
-PORTB_PCR19 EQU 0x4004A04C	
+;Pins in use
+PORTA_PCR01 EQU 0x40049004	
 	
 ;;; Directives
           PRESERVE8
@@ -45,14 +44,7 @@ Reset_Handler
 main PROC
 		BL initialize
 		BL changelight
-		;LDR r0, =0x0026E360 ; Timer 1.5M ticks, 30sec at 48mhz
-		;BL timerLoop
 stop B stop	
-
-timerLoop
-		subs r0, r0, #1
-		BNE timerLoop
-		BX LR
 		ENDP
 
 initialize PROC
@@ -65,26 +57,20 @@ initialize PROC
 							  ;This puts 0011 1110 0000 0000, binary of 3E, into the Sim_SCGC5 register  
 						      ;Which turns on the port clocks A-E.
 		;Initialize GPIO pins
-		LDR R0,=PORTB_PCR18     ;Load address of PORTB_PCR18 to R0 
+		LDR R0,=PORTA_PCR01     ;Load address of PORTA_PCR01 to R0 
 		LDR R1,=0x100           ;Load value to R1 
-		STR R1,[R0]             ;Put value into PORTB_PCR18 
+		STR R1,[R0]             ;Put value back into PCR
 		
-		LDR R0,=PORTB_PCR19     ;Load address of PORTB_PCR19 to R0 
-		LDR R1,=0x100           ;Load value to R1 
-		STR R1,[R0]             ;Put value into PORTB_PCR19 
-		
-		;LDR r7, =GPIOB_BASE		 ;Load base address of port B
-		LDR r0, =0x400FF054      ;Put value of PDDR into R0
-		LDR R1, =0x000FFFFF   	 ;Set Pin(s) 18, 19 set to output [0000 0000 0000 1100 0000 0000 0000 0000)
+		LDR R0, =0x400FF014      ;Put value of PORTA_PDDR into R0
+		LDR R1, =0x0000000F   	 ;Set Pin(s) 0-3 to output
 		STR R1,[R0]              ;Put value back into PDDR
 		
 		BX LR
 		ENDP
 
 changelight    PROC
-		;LDR r7, =GPIOB_BASE		;Load base address of port B
-		LDR r0, =0x400FF040     ;Put value of PDDR into R0
-		LDR R1, =0x00020000     ;Turn pin(s) 18, on
+		LDR R0, =0x400FF000     ;Put value of PORTA_PDOR into R0
+		LDR R1, =0x0000000F     ;Turn pin(s) 0-3, on
 		STR R1, [R0]			;Put value back into PDOR
 		BX LR
 		ENDP

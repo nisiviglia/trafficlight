@@ -10,10 +10,11 @@ GPIO_PDOR	EQU 0x00	;Turn output pin on or off
 GPIO_PSOR	EQU 0x04	;Turn output pin on
 GPIO_PCOR	EQU 0x08	;Turn output pin off
 GPIO_PTOR	EQU 0x0C	;Flip output pin
-GPIO_PDIR	EQU 0x10	;Set input pin on or off
+GPIO_PDIR	EQU 0x10	;Turn input pin on or off
 GPIO_PDDR	EQU 0x14	;Set as input or output
 ;Pins in use
-PORTA_PCR01 EQU 0x40049004	
+PORTA_PCR01 EQU 0x40049004 ;LED	1
+PORTC_PCR07 EQU 0x4004B01C ;Button
 	
 ;;; Directives
           PRESERVE8
@@ -43,7 +44,8 @@ Reset_Handler
 ;;;;;;;;;;PROGRAM CODE STARTS HERE;;;;;;;;;;;;		
 main PROC
 		BL initialize
-		BL changelight
+deadloop B buttonpress
+		 B deadloop
 stop B stop	
 		ENDP
 
@@ -56,22 +58,41 @@ initialize PROC
 		STR R1,[R0]           ;Put value back into SIM_SCGC5,   
 							  ;This puts 0011 1110 0000 0000, binary of 3E, into the Sim_SCGC5 register  
 						      ;Which turns on the port clocks A-E.
-		;Initialize GPIO pins
+		;;;Initialize GPIO pins
+		;LED 1
 		LDR R0,=PORTA_PCR01     ;Load address of PORTA_PCR01 to R0 
-		LDR R1,=0x100           ;Load value to R1 
+		LDR R1,=0x100           ;Set port to GPIO 
 		STR R1,[R0]             ;Put value back into PCR
 		
 		LDR R0, =0x400FF014      ;Put value of PORTA_PDDR into R0
 		LDR R1, =0x0000000F   	 ;Set Pin(s) 0-3 to output
 		STR R1,[R0]              ;Put value back into PDDR
 		
+		;Button
+		LDR R0,=PORTC_PCR07     ;Load address of PORTC_PCR07 to R0 
+		LDR R1,=0x103           ;Set port to GPIO and enable pull up. 
+		STR R1,[R0]             ;Put value back into PCR
+		
+		LDR R0, =0x400FF094      ;Put value of PORTC_PDDR into R0
+		LDR R1, =0x00000000   	 ;Set Pins 0-31 to input
+		STR R1,[R0]              ;Put value back into PDDR
+		
 		BX LR
 		ENDP
 
+buttonpress PROC
+		LDR R0, =0x400FF090     ;Put address of PORTC_PDIR into R0
+		LDR R1, [R0]			;Put value of PORTC_PDIR into R1
+		LDR R0, =0x00000080     ;Put value of monitored input pin
+		TST R1, R0				;Check if input changed
+		BEQ changelight			;Change LED if input has changed
+		BX LR					
+		ENDP
+
 changelight    PROC
-		LDR R0, =0x400FF000     ;Put value of PORTA_PDOR into R0
+		LDR R0, =0x400FF00C     ;Put address of PORTA_PDOR into R0
 		LDR R1, =0x0000000F     ;Turn pin(s) 0-3, on
-		STR R1, [R0]			;Put value back into PDOR
+		STR R1, [R0]			;Put value into PDOR
 		BX LR
 		ENDP
 

@@ -1,0 +1,8 @@
+SET PATH=C:\Keil_v5\ARM\ARMCC\Bin;C:\ProgramData\Oracle\Java\javapath;C:\Program Files (x86)\Intel\iCLS Client\;C:\Program Files\Intel\iCLS Client\;C:\Program Files\Dell\DW WLAN Card;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\WIDCOMM\Bluetooth Software\;C:\Program Files\WIDCOMM\Bluetooth Software\syswow64;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\MATLAB\MATLAB Production Server\R2015a\runtime\win64;C:\Program Files\MATLAB\MATLAB Production Server\R2015a\bin;C:\Program Files\MATLAB\MATLAB Production Server\R2015a\polyspace\bin;C:\Program Files (x86)\MiKTeX 2.9\miktex\bin\;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\;C:\Program Files\Microsoft SQL Server\110\Tools\Binn\;C:\Program Files (x86)\Microsoft SDKs\TypeScript\1.0\;C:\Program Files\Microsoft SQL Server\120\Tools\Binn\;C:\TDM-GCC-32\bin;C:\Program Files (x86)\Bitvise SSH Client;C:\Program Files\Microsoft\Web Platform Installer\;C:\altera\15.0\modelsim_ase\win32aloem;C:\altera\15.0\modelsim_ae\win32aloem;C:\Program Files (x86)\gfortran\bin
+SET CPU_TYPE=MKL25Z128xxx4
+SET CPU_VENDOR=Freescale
+SET UV2_TARGET=Target 1
+SET CPU_CLOCK=0x02CD29C0
+"C:\Keil_v5\ARM\ARMCC\Bin\ArmAsm" --Via ".\objects\main._ia"
+"C:\Keil_v5\ARM\ARMCC\Bin\ArmLink" --Via ".\Objects\TrafficLight.lnp"
+fromelf --m32 --output=C:\Users\Nick\Documents\KeilProject\TrafficLight\Objects\object.srec C:\Users\Nick\Documents\KeilProject\TrafficLight\Objects\TrafficLight.axf

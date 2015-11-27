@@ -13,8 +13,10 @@ GPIO_PTOR	EQU 0x0C	;Flip output pin
 GPIO_PDIR	EQU 0x10	;Turn input pin on or off
 GPIO_PDDR	EQU 0x14	;Set as input or output
 ;Pins in use
-PORTA_PCR01 EQU 0x40049004 ;LED	1
-PORTC_PCR07 EQU 0x4004B01C ;Button
+PORTA_PCR01 EQU 0x40049004  ;LED(red)
+PORTA_PCR02 EQU 0x40049008	;LED(yellow)
+PORTA_PCR04 EQU 0x40049010	;LED(green)
+PORTC_PCR07 EQU 0x4004B01C  ;Button
 	
 ;;; Directives
           PRESERVE8
@@ -59,13 +61,21 @@ initialize PROC
 							  ;This puts 0011 1110 0000 0000, binary of 3E, into the Sim_SCGC5 register  
 						      ;Which turns on the port clocks A-E.
 		;;;Initialize GPIO pins
-		;LED 1
+		;LED (red)
 		LDR R0,=PORTA_PCR01     ;Load address of PORTA_PCR01 to R0 
 		LDR R1,=0x100           ;Set port to GPIO 
 		STR R1,[R0]             ;Put value back into PCR
-		
+		;LED (yellow)
+		LDR R0,=PORTA_PCR02     ;Load address of PORTA_PCR02 to R0 
+		LDR R1,=0x100           ;Set port to GPIO 
+		STR R1,[R0]             ;Put value back into PCR
+		;LED (green)
+		LDR R0,=PORTA_PCR04     ;Load address of PORTA_PCR04 to R0 
+		LDR R1,=0x100           ;Set port to GPIO 
+		STR R1,[R0]             ;Put value back into PCR
+		;LED PDDR
 		LDR R0, =0x400FF014      ;Put value of PORTA_PDDR into R0
-		LDR R1, =0x0000000F   	 ;Set Pin(s) 0-3 to output
+		LDR R1, =0x00000016   	 ;Set Pin(s) 1,2,4 to output (0001 0110)
 		STR R1,[R0]              ;Put value back into PDDR
 		
 		;Button
@@ -85,15 +95,16 @@ buttonpress PROC
 		LDR R1, [R0]			;Put value of PORTC_PDIR into R1
 		LDR R0, =0x00000080     ;Put value of monitored input pin
 		TST R1, R0				;Check if input changed
+		LDR R1, =0x00000016     ;Turn pin(s) 1,2,4, on
 		BEQ changelight			;Change LED if input has changed
 		BX LR					
 		ENDP
 
-changelight    PROC
+changelight PROC
 		LDR R0, =0x400FF00C     ;Put address of PORTA_PDOR into R0
-		LDR R1, =0x0000000F     ;Turn pin(s) 0-3, on
+		;LDR R1, =0x0000000F     ;Turn pin(s) 0-3, on
 		STR R1, [R0]			;Put value into PDOR
 		BX LR
 		ENDP
-
+			
 		END	;End of program

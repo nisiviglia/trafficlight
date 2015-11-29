@@ -45,20 +45,21 @@ Reset_Handler
 
 ;;;;;;;;;;PROGRAM CODE STARTS HERE;;;;;;;;;;;;		
 main
-		LDR R0, =0X00000000
-		LDR R1, =0X00000000
-		LDR R2, =0X00000000
-		LDR R3, =0X00000000
-		LDR R6, =0X00000000
-		
-		
+		LDR R0, =0x00000000
+		LDR R1, =0x00000000
+		LDR R2, =0x00000000
+		LDR R3, =0x00000000
+		LDR R4, =0x00000000
+		LDR R5, =0x00000000
+		LDR R6, =0x00000000
+		LDR R7, =0x00000000
 		
 		BL initialize			;Initialize I/O ports
 		
 reset	LDR R1, =0x00000002     ;Change light to red
 		BL changelight			;
 		
-		LDR R3, =0x0E4E1600		;Put value into counter (? seconds)
+		LDR R3, =0x00000011		;Put value into counter (1 loop just to show code works)
 d30_1 	BL buttonpress			;Check for button press
 		SUBS R3, #17 			;Subtract # of ticks in loop (17) from counter
 		CMP R3, #0
@@ -69,20 +70,20 @@ d30_1 	BL buttonpress			;Check for button press
 		LDR R1, =0x00000010		;Change light to green
 		BL changelight			;
 		
-		LDR R3, =0x0E4E1600		;Put value into counter (? seconds)
+		LDR R3, =0x00D76AB5		;Put value into counter (5 seconds, the board resets when counter is this high)
 d30_2	BL buttonpress			;Check for button press
-		SUBS R3, #17 			;Subtract # of ticks in loop (17) from counter
+		SUBS R3, #1 			;Subtract # of ticks in loop (17) from counter
 		CMP R3, #0
 		BGT d30_2
 
 		CMP R6, #1				;Check for button press
 		BEQ reset				;Reset to red if pressed
-		LDR R1, =0x00000011		;Change light to yellow
+		LDR R1, =0x00000005		;Change light to yellow
 		BL changelight			;
 		
-		LDR R3, =0x0E4E1600		;Put value into counter (? seconds)
+		LDR R3, =0x00D76AB5		;Put value into counter (? seconds)
 d10_1	BL buttonpress			;Check for button press
-		SUBS R3, #17 			;Subtract # of ticks in loop (17) from counter
+		SUBS R3, #1 			;Subtract # of ticks in loop (17) from counter
 		CMP R3, #0
 		BGT d10_1
         B reset					;Reset to beginning
@@ -93,7 +94,7 @@ buttonpress
 		LDR R1, [R0]			;Put value of PORTC_PDIR into R1
 		LDR R0, =0x00000080     ;Put value of monitored input pin
 		TST R1, R0				;Check for button press
-		BEQ nopress				;Break from process if button not pressed
+		BNE nopress				;Break from process if button not pressed
 		MOVS R6, #1				;Put 1 in R6 if button has been pressed
 nopress	BX LR					
 

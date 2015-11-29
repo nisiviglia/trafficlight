@@ -44,15 +44,66 @@ Reset_Handler
 ;REMEMBER frometf --m32 option for .srec output!
 
 ;;;;;;;;;;PROGRAM CODE STARTS HERE;;;;;;;;;;;;		
-main PROC
-		BL initialize
-deadloop B buttonpress
-		 B deadloop
-stop B stop	
-		ENDP
+main
+		LDR R0, =0X00000000
+		LDR R1, =0X00000000
+		LDR R2, =0X00000000
+		LDR R3, =0X00000000
+		LDR R6, =0X00000000
+		
+		
+		
+		BL initialize			;Initialize I/O ports
+		
+reset	LDR R1, =0x00000002     ;Change light to red
+		BL changelight			;
+		
+		LDR R3, =0x0E4E1600		;Put value into counter (? seconds)
+d30_1 	BL buttonpress			;Check for button press
+		SUBS R3, #17 			;Subtract # of ticks in loop (17) from counter
+		CMP R3, #0
+		BGT d30_1
+		
+		CMP R6, #1				;Check for button press
+		BEQ reset				;Reset to red if pressed
+		LDR R1, =0x00000010		;Change light to green
+		BL changelight			;
+		
+		LDR R3, =0x0E4E1600		;Put value into counter (? seconds)
+d30_2	BL buttonpress			;Check for button press
+		SUBS R3, #17 			;Subtract # of ticks in loop (17) from counter
+		CMP R3, #0
+		BGT d30_2
 
-initialize PROC
-		;Initialize GPIO clock pins
+		CMP R6, #1				;Check for button press
+		BEQ reset				;Reset to red if pressed
+		LDR R1, =0x00000011		;Change light to yellow
+		BL changelight			;
+		
+		LDR R3, =0x0E4E1600		;Put value into counter (? seconds)
+d10_1	BL buttonpress			;Check for button press
+		SUBS R3, #17 			;Subtract # of ticks in loop (17) from counter
+		CMP R3, #0
+		BGT d10_1
+        B reset					;Reset to beginning
+
+;;;Subroutines
+buttonpress 
+		LDR R0, =0x400FF090     ;Put address of PORTC_PDIR into R0
+		LDR R1, [R0]			;Put value of PORTC_PDIR into R1
+		LDR R0, =0x00000080     ;Put value of monitored input pin
+		TST R1, R0				;Check for button press
+		BEQ nopress				;Break from process if button not pressed
+		MOVS R6, #1				;Put 1 in R6 if button has been pressed
+nopress	BX LR					
+
+changelight 
+		LDR R0, =0x400FF000     ;Put address of PORTA_PDOR into R0
+		STR R1, [R0]			;Put value into PDOR
+		BX LR
+			
+initialize
+		;Initialize GPIO clock
 		LDR R0,=SIM_SCGC5     ;Load address of SIM_SCGC5 to R0  
 		LDR R1,[R0]           ;Put value of SIM_SCGC5 into R1  
 		LDR R2,=0x00003F80    ;Load value to turn on all port clocks into R2    
@@ -60,7 +111,7 @@ initialize PROC
 		STR R1,[R0]           ;Put value back into SIM_SCGC5,   
 							  ;This puts 0011 1110 0000 0000, binary of 3E, into the Sim_SCGC5 register  
 						      ;Which turns on the port clocks A-E.
-		;;;Initialize GPIO pins
+		;;Initialize GPIO pins
 		;LED (red)
 		LDR R0,=PORTA_PCR01     ;Load address of PORTA_PCR01 to R0 
 		LDR R1,=0x100           ;Set port to GPIO 
@@ -88,23 +139,6 @@ initialize PROC
 		STR R1,[R0]              ;Put value back into PDDR
 		
 		BX LR
-		ENDP
 
-buttonpress PROC
-		LDR R0, =0x400FF090     ;Put address of PORTC_PDIR into R0
-		LDR R1, [R0]			;Put value of PORTC_PDIR into R1
-		LDR R0, =0x00000080     ;Put value of monitored input pin
-		TST R1, R0				;Check if input changed
-		LDR R1, =0x00000016     ;Turn pin(s) 1,2,4, on
-		BEQ changelight			;Change LED if input has changed
-		BX LR					
-		ENDP
-
-changelight PROC
-		LDR R0, =0x400FF00C     ;Put address of PORTA_PDOR into R0
-		;LDR R1, =0x0000000F     ;Turn pin(s) 0-3, on
-		STR R1, [R0]			;Put value into PDOR
-		BX LR
-		ENDP
 			
 		END	;End of program

@@ -44,17 +44,17 @@ main
 reset	LDR R6,=0X0				;Reset button
     	LDR R1,=0x00000002      ;Change light to red
 		BL changelight			;
-		LDR R3,=0x05B8D800		;Put value into counter (4 seconds)
+		LDR R3,=0x2AEA5400		;Put value into counter (30 seconds)
 		BL delay				;Start delay loop
 		
 		LDR R1,=0x00000010		;Change light to green
 		BL changelight			;
-		LDR R3,=0x05B8D800		;Put value into counter (4 seconds)
+		LDR R3,=0x2AEA5400		;Put value into counter (30 seconds)
 		BL delay				;Start delay loop
 
 		LDR R1,=0x00000005		;Change light to yellow
 		BL changelight			;
-		LDR R3,=0x02DC6C00		;Put value into counter (2 seconds)
+		LDR R3,=0xE4E1C00		;Put value into counter (10 seconds)
 		BL delay				;Start delay loop
         B reset					;Reset to beginning
 
@@ -64,7 +64,7 @@ delay	LDR R0,=PORTC_PDIR      ;Put address of PORTC_PDIR into R0
 		LDR R1,[R0]			    ;Put value of PORTC_PDIR into R1
 		LDR R0,=0x00000080      ;Put value of monitored input pin
 		TST R1,R0				;Check for button press
-		BNE nopress				;Break over next instruction if button not pressed (EQ for sim)
+		BEQ nopress				;Break over next instruction if button not pressed (EQ for sim)
 		MOVS R6,#1				;Put 1 in R6 if button has been pressed
 		
 nopress	SUBS R3,#13 			;Subtract # of ticks in loop (13) from counter

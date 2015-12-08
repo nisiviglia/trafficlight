@@ -83,24 +83,24 @@ ARM Macro Assembler    Page 2
    45 00000006 491F            LDR              R1,=0x00000002 ;Change light to
                                                              red
    46 00000008 F000 F81C       BL               changelight ;
-   47 0000000C 4B1E            LDR              R3,=0x05B8D800 ;Put value into 
-                                                            counter (4 seconds)
-                                                            
+   47 0000000C 4B1E            LDR              R3,=0x2AEA5400 ;Put value into 
+                                                            counter (30 seconds
+                                                            )
    48 0000000E F000 F80D       BL               delay       ;Start delay loop
    49 00000012         
    50 00000012 491E            LDR              R1,=0x00000010 ;Change light to
                                                              green
    51 00000014 F000 F816       BL               changelight ;
-   52 00000018 4B1B            LDR              R3,=0x05B8D800 ;Put value into 
-                                                            counter (4 seconds)
-                                                            
+   52 00000018 4B1B            LDR              R3,=0x2AEA5400 ;Put value into 
+                                                            counter (30 seconds
+                                                            )
    53 0000001A F000 F807       BL               delay       ;Start delay loop
    54 0000001E         
    55 0000001E 491C            LDR              R1,=0x00000005 ;Change light to
                                                              yellow
    56 00000020 F000 F810       BL               changelight ;
-   57 00000024 4B1B            LDR              R3,=0x02DC6C00 ;Put value into 
-                                                            counter (2 seconds)
+   57 00000024 4B1B            LDR              R3,=0xE4E1C00 ;Put value into c
+                                                            ounter (10 seconds)
                                                             
    58 00000026 F000 F801       BL               delay       ;Start delay loop
    59 0000002A E7EB            B                reset       ;Reset to beginning
@@ -116,7 +116,7 @@ ARM Macro Assembler    Page 2
                                                             nitored input pin
    66 00000032 4201            TST              R1,R0       ;Check for button p
                                                             ress
-   67 00000034 D100            BNE              nopress     ;Break over next in
+   67 00000034 D000            BEQ              nopress     ;Break over next in
                                                             struction if button
                                                              not pressed (EQ fo
                                                             r sim)
@@ -230,10 +230,10 @@ ARM Macro Assembler    Page 4
   125 00000080                 END                          ;End of program
               00000000 
               00000002 
-              05B8D800 
+              2AEA5400 
               00000010 
               00000005 
-              02DC6C00 
+              0E4E1C00 
               400FF090 
               00000080 
               400FF000 
